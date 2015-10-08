@@ -8,7 +8,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
 		
 		<script type='text/javascript'>//<![CDATA[
-			//var maslformedparentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1l2jeO_mukPEyrXwGtNn56xM-hGbas-WMwZ7So3cOAIc/edit#gid=0';
+			//var malformedparentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1l2jeO_mukPEyrXwGtNn56xM-hGbas-WMwZ7So3cOAIc/edit#gid=0';
 			var parentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=0';
 			var filterSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=1597681109';
 		
@@ -22,7 +22,6 @@
 			function LoadResources(filterType, filterValue)
 			{			
 				var searchQuery = "select A,B,C,D,E,F,I where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
-				//var searchQuery = "select A,B where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
 			
 				// What is the query actually?
 				$('#searchQuery').text(searchQuery);
@@ -83,31 +82,27 @@
 				var CityTemplate = Handlebars.compile($('#city-template').html());
 				var TypeTemplate = Handlebars.compile($('#type-template').html());
 		
-				// Create a table that lists our filter options		
+				// Populate our select lists with filter options	
 				$('#regionFilter').sheetrock({
 					url: filterSheet,
-					query: "select A, B, C",
+					query: "select A WHERE A != ' '",
 					rowTemplate: RegionTemplate,
 					  callback: SheetrockHandler
-				});
+				}).append($("<option></option>"));
 
 				$('#cityFilter').sheetrock({
 					url: filterSheet,
-					query: "select A, B, C",
+					query: "select B",
 					rowTemplate: CityTemplate,
 					  callback: SheetrockHandler
-				});
+				}).append($("<option></option>"));
 
 				$('#typeFilter').sheetrock({
 					url: filterSheet,
-					query: "select A, B, C",
+					query: "select C",
 					rowTemplate: TypeTemplate,
 					  callback: SheetrockHandler
-				});
-				
-				// Testing calls
-				//LoadTestList();
-				//LoadResources("Service Location", "Vancouver");
+				}).append($("<option></option>"));
 			});//]]> 
 		</script>	
 		

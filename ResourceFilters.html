@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
+		<script type='text/javascript' src="https://chriszarate.github.io/sheetrock/dist/sheetrock.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
+		
+		<script type='text/javascript'>//<![CDATA[
+			//var maslformedparentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1l2jeO_mukPEyrXwGtNn56xM-hGbas-WMwZ7So3cOAIc/edit#gid=0';
+			var parentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=0';
+			var filterSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=1597681109';
+		
+			// When querying the spreadsheet we must use column letters. Map the column names of our filters to their "letter"
+			var filterColMapping = {
+				"Service Location": ["H"],
+				"Service Type": ["G"],
+				"Service Region": ["I"]
+			};
+
+			function LoadResources(filterType, filterValue)
+			{			
+				var searchQuery = "select A,B,C,D,E,F,I where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
+				//var searchQuery = "select A,B where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
+			
+				// What is the query actually?
+				$('#searchQuery').text(searchQuery);
+			
+				var labelsArray = ["Organization", "Program", "Description", "Website", "Phone Number", "Email", "Service Type", "Service Location", "Service Region"];
+			
+				$('#loadingIcon').show();
+				
+				// Load up the list of resources that match the filters
+				$('#resourceList').empty().sheetrock({
+				  url: parentToolkitSheet,
+				  query: searchQuery,
+				  labels: labelsArray,
+				  loading: $('#loadingIcon')
+				});
+				
+				$('#loadingIcon').hide();
+			}		
+			
+			function LoadTestList()
+			{
+				$('#testList').empty().sheetrock({
+					url:mockSheet,
+					fetchSize: 20,
+					sql: "select A,B,C,D,E,F,G,H,I ORDER BY A",
+					rowGroups: false
+				})
+			}
+		
+			$(window).load(function(){
+				$('#regionFilter').change(function() {
+					LoadResources("Service Region", $(this).val());
+				});
+			
+				$('#cityFilter').change(function() {
+					LoadResources("Service Location", $(this).val());
+				});
+			
+				$('#typeFilter').change(function() {
+					LoadResources("Service Type", $(this).val());
+				});
+			
+				// Sheetrock.js 1.0 Example 1
+				// https://chriszarate.github.io/sheetrock/
+		
+				var RegionTemplate = Handlebars.compile($('#region-template').html());
+				var CityTemplate = Handlebars.compile($('#city-template').html());
+				var TypeTemplate = Handlebars.compile($('#type-template').html());
+		
+				// Create a table that lists our filter options		
+				$('#regionFilter').sheetrock({
+					url: filterSheet,
+					sql: "select A, B, C",
+					rowTemplate: RegionTemplate
+				});
+
+				$('#cityFilter').sheetrock({
+					url: filterSheet,
+					sql: "select A, B, C",
+					rowTemplate: CityTemplate
+				});
+
+				$('#typeFilter').sheetrock({
+					url: filterSheet,
+					sql: "select A, B, C",
+					rowTemplate: TypeTemplate
+				});
+				
+				// Testing calls
+				//LoadTestList();
+				//LoadResources("Service Location", "Vancouver");
+			});//]]> 
+		</script>	
+		
+	</head>
+	<body>	
+		
+		<h2>Search Query</h2>
+		<p id="searchQuery"></p>
+			
+		<table id="testList" style="border: 2px solid black;background-color:lightgray"></table>
+		
+		<hr />
+		<hr />
+		
+		<div id="loadingIcon" style="float:right;padding:10px;color:white;background-color:#CF0072;display:none;">
+			LOADING...
+		</div>
+		
+		<div>
+		<script type='text/javascript'>
+		</script>
+		<label for="regionFilter">Search by region</label>
+		<select id="regionFilter" style="width:100px;">
+			<script id="region-template" type="text/x-handlebars-template">
+				<option value="{{cells.Regions}}">{{cells.Regions}}</option>
+			</script>
+		</select>
+		</div>
+		
+		<div>
+			<script type='text/javascript'>
+			</script>
+		<label for="cityFilter">Search by City</label>
+		<select id="cityFilter" style="width:100px;">
+			<script id="city-template" type="text/x-handlebars-template">
+				<option value="{{cells.Cities}}">{{cells.Cities}}</option>
+			</script>
+		</select>
+		</div>
+
+		<div>
+			<script type='text/javascript'>
+			</script>
+		<label for="typeFilter">Search by Service Type</label>
+		<select id="typeFilter" style="width:100px;">
+			<script id="type-template" type="text/x-handlebars-template">
+				<option value="{{cells.Types}}">{{cells.Types}}</option>
+			</script>
+		</select>
+		</div>
+		
+		<hr />
+		
+		<p>Resources available based on your selection:</p>
+		<table id="resourceList" class="table table-condensed table-striped"></table>
+	</body>
+		
+</html>
+

@@ -4,7 +4,6 @@
   		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
 		<script type='text/javascript' src="https://chriszarate.github.io/sheetrock/dist/sheetrock.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
 		
@@ -50,6 +49,8 @@
 				{
 					$('#errorMessage').show();
 				}
+				
+				var x = Response.rows;
 			}
 			
 			function LoadTestList()
@@ -57,7 +58,7 @@
 				$('#testList').empty().sheetrock({
 					url:mockSheet,
 					fetchSize: 20,
-					sql: "select A,B,C,D,E,F,G,H,I ORDER BY A",
+					query: "select A,B,C,D,E,F,G,H,I ORDER BY A",
 					rowGroups: false
 				})
 			}
@@ -85,21 +86,21 @@
 				// Create a table that lists our filter options		
 				$('#regionFilter').sheetrock({
 					url: filterSheet,
-					sql: "select A, B, C",
+					query: "select A, B, C",
 					rowTemplate: RegionTemplate,
 					  callback: SheetrockHandler
 				});
 
 				$('#cityFilter').sheetrock({
 					url: filterSheet,
-					sql: "select A, B, C",
+					query: "select A, B, C",
 					rowTemplate: CityTemplate,
 					  callback: SheetrockHandler
 				});
 
 				$('#typeFilter').sheetrock({
 					url: filterSheet,
-					sql: "select A, B, C",
+					query: "select A, B, C",
 					rowTemplate: TypeTemplate,
 					  callback: SheetrockHandler
 				});
@@ -110,6 +111,14 @@
 			});//]]> 
 		</script>	
 		
+		<style type="text/css">
+			.field label {
+				width: 200px;
+			}
+			select {
+				width: 200px;
+			}
+		</style>
 	</head>
 	<body>	
 		
@@ -125,37 +134,31 @@
 			LOADING...
 		</div>
 		
-		<div>
-		<script type='text/javascript'>
-		</script>
-		<label for="regionFilter">Search by region</label>
-		<select id="regionFilter" style="width:100px;">
-			<script id="region-template" type="text/x-handlebars-template">
-				<option value="{{cells.Regions}}">{{cells.Regions}}</option>
-			</script>
-		</select>
+		<div class="field">
+			<label for="regionFilter">Search by region</label>
+			<select id="regionFilter">
+				<script id="region-template" type="text/x-handlebars-template">
+					<option value="{{cells.Regions}}">{{cells.Regions}}</option>
+				</script>
+			</select>
 		</div>
 		
-		<div>
-			<script type='text/javascript'>
-			</script>
-		<label for="cityFilter">Search by City</label>
-		<select id="cityFilter" style="width:100px;">
-			<script id="city-template" type="text/x-handlebars-template">
-				<option value="{{cells.Cities}}">{{cells.Cities}}</option>
-			</script>
-		</select>
+		<div class="field">
+			<label for="cityFilter">Search by City</label>
+			<select id="cityFilter">
+				<script id="city-template" type="text/x-handlebars-template">
+					<option value="{{cells.Cities}}">{{cells.Cities}}</option>
+				</script>
+			</select>
 		</div>
 
-		<div>
-			<script type='text/javascript'>
-			</script>
-		<label for="typeFilter">Search by Service Type</label>
-		<select id="typeFilter" style="width:100px;">
-			<script id="type-template" type="text/x-handlebars-template">
-				<option value="{{cells.Types}}">{{cells.Types}}</option>
-			</script>
-		</select>
+		<div class="field">
+			<label for="typeFilter">Search by Service Type</label>
+			<select id="typeFilter">
+				<script id="type-template" type="text/x-handlebars-template">
+					<option value="{{cells.Types}}">{{cells.Types}}</option>
+				</script>
+			</select>
 		</div>
 		
 		<hr />

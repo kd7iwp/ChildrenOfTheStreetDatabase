@@ -37,11 +37,20 @@
 				  url: parentToolkitSheet,
 				  query: searchQuery,
 				  labels: labelsArray,
-				  loading: $('#loadingIcon')
+				  loading: $('#loadingIcon'),
+				  callback: SheetrockHandler
 				});
 				
 				$('#loadingIcon').hide();
 			}		
+			
+			function SheetrockHandler(Error, Options, Response)
+			{
+				if (Error != null)
+				{
+					$('#errorMessage').show();
+				}
+			}
 			
 			function LoadTestList()
 			{
@@ -77,19 +86,22 @@
 				$('#regionFilter').sheetrock({
 					url: filterSheet,
 					sql: "select A, B, C",
-					rowTemplate: RegionTemplate
+					rowTemplate: RegionTemplate,
+					  callback: SheetrockHandler
 				});
 
 				$('#cityFilter').sheetrock({
 					url: filterSheet,
 					sql: "select A, B, C",
-					rowTemplate: CityTemplate
+					rowTemplate: CityTemplate,
+					  callback: SheetrockHandler
 				});
 
 				$('#typeFilter').sheetrock({
 					url: filterSheet,
 					sql: "select A, B, C",
-					rowTemplate: TypeTemplate
+					rowTemplate: TypeTemplate,
+					  callback: SheetrockHandler
 				});
 				
 				// Testing calls
@@ -147,6 +159,10 @@
 		</div>
 		
 		<hr />
+		
+		<div id="errorMessage" style="display:none;border:4px solid red;">
+			<p>There was an error loading the database</p>
+		</div>
 		
 		<p>Resources available based on your selection:</p>
 		<table id="resourceList" class="table table-condensed table-striped"></table>

@@ -24,7 +24,7 @@
 
 			function LoadResources(filterType, filterValue)
 			{			
-				var searchQuery = "select A,B,C,D,E,F,G,H,I where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
+				var searchQuery = "select A,B,C,D,E,F,G,H where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
 						
 				//var labelsArray = ["Organization", "Program", "Description", "Website", "Phone Number", "Email", "Service Type", "Service Location", "Service Region"];
 			
@@ -103,8 +103,11 @@
 			select {
 				width: 200px;
 			}
-			.table-striped > tbody > tr:nth-of-type(2n+1) {
+			.table-striped > tbody > tr:nth-of-type(2n+2) {
 				background-color: #F8C0EB;
+			}
+			#resourceList > thead > tr > th {
+				font-weight:normal;
 			}
 			
 		</style>
@@ -149,6 +152,7 @@
 		
 		<p>Resources available based on your selection:</p>
 		<table id="resourceList" class="table table-condensed table-striped">
+			<thead>
 			<tr>
 				<th style="width:150px;">Organization</th>
 				<th style="width:150px;">Program</th>
@@ -158,20 +162,19 @@
 				<th>Email</th>
 				<th>Services</th>
 				<th>Location</th>
-				<th>Region</th>
 			</tr>
+			</thead>
 			<tbody id="resourceBody">
 				<script id="resourceTemplate" type="text/x-handlebars-template">
 					<tr>
-						<td>{{cells.Organization}}</td>
-						<td>{{cells.Program}}</td>
+						<td style="font-weight:bold;">{{cells.Organization}}</td>
+						<td style="font-weight:bold;font-style:italic;">{{cells.Program}}</td>
 						<td>{{cells.Description}}</td>
 						<td><a href="{{cells.Website}}">{{cells.Website}}</a></td>
 						<td>{{cells.Phone}}</td>
 						<td><a href="mailto:{{cells.Email}}">{{cells.Email}}</a></td>
 						<td>{{cells.Services}}</td>
 						<td>{{cells.Location}}</td>
-						<td>{{cells.Region}}</td>
 					</tr>
 				</script>
 			</tbody>			

@@ -69,8 +69,16 @@
 				var RegionTemplate = Handlebars.compile($('#region-template').html());
 				var CityTemplate = Handlebars.compile($('#city-template').html());
 				var TypeTemplate = Handlebars.compile($('#type-template').html());
-				// Compile the test template
+				// Compile the resource template
 				resourceTemplate = Handlebars.compile($('#resourceTemplate').html());
+				// We need to check if a resource has a website or not.
+				Handlebars.registerHelper('if', function(conditional, options)
+				{
+					if (conditional)
+						return options.fn(this);
+					else
+						return options.inverse(this);
+				})
 		
 				// Populate our select lists with filter options	
 				$('#regionFilter').sheetrock({
@@ -157,7 +165,6 @@
 				<th style="width:150px;">Organization</th>
 				<th style="width:150px;">Program</th>
 				<th>Description</th>
-				<th style="width:150px;">Website</th>
 				<th>Phone</th>
 				<th>Email</th>
 				<th>Services</th>
@@ -167,12 +174,20 @@
 			<tbody id="resourceBody">
 				<script id="resourceTemplate" type="text/x-handlebars-template">
 					<tr>
-						<td style="font-weight:bold;">{{cells.Organization}}</td>
+						<td>{{#if cells.Website}}
+								<a href="http://{{cells.Website}}">{{cells.Organization}}</a>
+							{{else}}
+								{{cells.Organization}}
+							{{/if}}
+						</td>
 						<td style="font-weight:bold;font-style:italic;">{{cells.Program}}</td>
 						<td>{{cells.Description}}</td>
-						<td><a href="{{cells.Website}}">{{cells.Website}}</a></td>
 						<td>{{cells.Phone}}</td>
-						<td><a href="mailto:{{cells.Email}}">{{cells.Email}}</a></td>
+						<td>
+							{{#if cells.Email}}
+								<a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
+							{{/if}}
+						</td>
 						<td>{{cells.Services}}</td>
 						<td>{{cells.Location}}</td>
 					</tr>

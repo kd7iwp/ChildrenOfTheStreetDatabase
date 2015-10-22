@@ -112,18 +112,24 @@
 			select {
 				width: 200px;
 			}
+			#resourceList {
+				width: 100%;
+				table-layout: fixed;
+			}
 			.table-striped > tbody > tr:nth-of-type(2n+2) {
 				background-color: #F8C0EB;
 			}
 			#resourceList > thead > tr > th {
 				font-family: helvetica;
 				color: white;
-				font-weight:normal;
 				background-color:#CF0072;
-			}		
+			}	
 			.contact {
-				width: 10%;
-			}
+				font-size: small;
+				
+				overflow: hidden;
+				margin-left: 5px;
+			}	
 		</style>
 	</head>
 	<body>	
@@ -179,34 +185,36 @@
 			<tr>
 				<th style="width:15%;">Organization</th>
 				<th style="width:15%;">Program</th>
-				<th style="width:30%;">Description</th>
-				<th class="contact">Contact</th>
-				<th style="width:15%;">Services</th>
-				<th style="width:15%;">Service Area</th>
+				<th style="width:25%;">Description</th>
+				<th style="width:14%;">Services</th>
+				<th style="width:14%;">Service Area</th>
 			</tr>
 			</thead>
 			<tbody id="resourceBody">
 				<script id="resourceTemplate" type="text/x-handlebars-template">
 					<tr>
-						<td>{{#if cells.Website}}
-								<a href="http://{{cells.Website}}">{{cells.Organization}}</a>
-							{{else}}
-								{{cells.Organization}}
-							{{/if}}
+						<td>
+							<strong>
+								{{#if cells.Website}}
+									<a href="http://{{cells.Website}}">{{cells.Organization}}</a>
+								{{else}}
+									{{cells.Organization}}
+								{{/if}}
+							</strong>
+							<div class="contact">
+								{{#if cells.Email}}
+									<strong>e:</strong>&nbsp;<a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
+								{{/if}}
+								{{#if cells.Phone}}
+									{{#if cells.Email}}
+										<br />
+									{{/if}}
+									<strong>p:</strong>&nbsp;{{cells.Phone}}
+								{{/if}}
+							</div>
 						</td>
 						<td style="font-weight:bold;font-style:italic;">{{cells.Program}}</td>
 						<td>{{cells.Description}}</td>
-						<td class="contact">
-							{{#if cells.Email}}
-								Email: <a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
-							{{/if}}
-							{{#if cells.Phone}}
-								{{#if cells.Email}}
-									<br />
-								{{/if}}
-								Phone: {{cells.Phone}}
-							{{/if}}
-						</td>
 						<td>{{cells.Services}}</td>
 						<td>{{cells.Location}}</td>
 					</tr>

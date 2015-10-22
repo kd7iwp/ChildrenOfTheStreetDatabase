@@ -64,7 +64,14 @@
 				$('#typeFilter').change(function() {
 					LoadResources("Service Type", $(this).val());
 				});
-					
+				
+				// Clear out the other filters when one is changed
+				$('.filter').change(function() {
+					var selectedVal = $(this).val();
+					$('.filter').val('');
+					$(this).val(selectedVal);
+				});
+								
 				// Register our Handlebars templates
 				var RegionTemplate = Handlebars.compile($('#region-template').html());
 				var CityTemplate = Handlebars.compile($('#city-template').html());

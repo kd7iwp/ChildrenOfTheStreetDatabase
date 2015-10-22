@@ -120,6 +120,9 @@
 				background-color:#CF0072;
 			}
 			
+			.contact {
+				width: 10%;
+			}
 		</style>
 	</head>
 	<body>	
@@ -173,13 +176,12 @@
 		<table id="resourceList" class="table table-condensed table-striped">
 			<thead>
 			<tr>
-				<th style="width:150px;">Organization</th>
-				<th style="width:120px;">Program</th>
-				<th style="width:200px;">Description</th>
-				<th style="width:100px;">Phone</th>
-				<th style="width:75px;">Email</th>
-				<th style="width:100px;">Services</th>
-				<th style="width:100px;">Service Area</th>
+				<th style="width:15%;">Organization</th>
+				<th style="width:15%;">Program</th>
+				<th style="width:30%;">Description</th>
+				<th class="contact">Contact</th>
+				<th style="width:15%;">Services</th>
+				<th style="width:15%;">Service Area</th>
 			</tr>
 			</thead>
 			<tbody id="resourceBody">
@@ -193,10 +195,12 @@
 						</td>
 						<td style="font-weight:bold;font-style:italic;">{{cells.Program}}</td>
 						<td>{{cells.Description}}</td>
-						<td>{{cells.Phone}}</td>
-						<td>
+						<td class="contact">
 							{{#if cells.Email}}
-								<a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
+								Email: <a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
+							{{/if}}
+							{{#if cells.Phone}}
+								Phone: {{cells.Phone}}
 							{{/if}}
 						</td>
 						<td>{{cells.Services}}</td>

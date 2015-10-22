@@ -8,7 +8,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
 		
 		<script type='text/javascript'>//<![CDATA[
-			//var malformedparentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1l2jeO_mukPEyrXwGtNn56xM-hGbas-WMwZ7So3cOAIc/edit#gid=0';
 			var parentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=0';
 			var filterSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=1597681109';
 		
@@ -26,19 +25,15 @@
 			{			
 				var searchQuery = "select A,B,C,D,E,F,G,H where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
 						
-				//var labelsArray = ["Organization", "Program", "Description", "Website", "Phone Number", "Email", "Service Type", "Service Location", "Service Region"];
-			
 				$('#loadingIcon').show();
 				
 				// Load up the list of resources that match the filters
 				$('#resourceBody').empty().sheetrock({
 					url: parentToolkitSheet,
 					query: searchQuery,
-					//labels: labelsArray,
 					loading: $('#loadingIcon'),
 					rowTemplate: resourceTemplate,
-					callback: SheetrockHandler,
-					rowGroups: false
+					callback: SheetrockHandler
 				});
 				
 				$('#loadingIcon').hide();

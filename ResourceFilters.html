@@ -69,38 +69,37 @@
 				var RegionTemplate = Handlebars.compile($('#region-template').html());
 				var CityTemplate = Handlebars.compile($('#city-template').html());
 				var TypeTemplate = Handlebars.compile($('#type-template').html());
-				// Compile the resource template
 				resourceTemplate = Handlebars.compile($('#resourceTemplate').html());
-				// We need to check if a resource has a website or not.
+				
+				// This Handlebars block_helper let's us know if a value exists or not to perform conditional template statements
 				Handlebars.registerHelper('if', function(conditional, options)
 				{
 					if (conditional)
 						return options.fn(this);
-					else
-						return options.inverse(this);
+					return options.inverse(this);
 				})
 		
 				// Populate our select lists with filter options	
 				$('#regionFilter').sheetrock({
 					url: filterSheet,
-					query: "select A WHERE A != ' '",
+					query: "select A",
 					rowTemplate: RegionTemplate,
-					  callback: SheetrockHandler
-				}).append($("<option></option>"));
+					callback: SheetrockHandler
+				});
 
 				$('#cityFilter').sheetrock({
 					url: filterSheet,
 					query: "select B",
 					rowTemplate: CityTemplate,
-					  callback: SheetrockHandler
-				}).append($("<option></option>"));
+					callback: SheetrockHandler
+				});
 
 				$('#typeFilter').sheetrock({
 					url: filterSheet,
 					query: "select C",
 					rowTemplate: TypeTemplate,
-					  callback: SheetrockHandler
-				}).append($("<option></option>"));
+					callback: SheetrockHandler
+				});
 			});//]]> 
 		</script>	
 		
@@ -115,7 +114,10 @@
 				background-color: #F8C0EB;
 			}
 			#resourceList > thead > tr > th {
+				font-family: helvetica;
+				color: white;
 				font-weight:normal;
+				background-color:#CF0072;
 			}
 			
 		</style>
@@ -128,8 +130,11 @@
 		<div class="field">
 			<label for="regionFilter">Search by Region</label>
 			<select id="regionFilter">
+				<option></option>
 				<script id="region-template" type="text/x-handlebars-template">
-					<option value="{{cells.Regions}}">{{cells.Regions}}</option>
+					{{#if cells.Regions}}
+						<option value="{{cells.Regions}}">{{cells.Regions}}</option>
+					{{/if}}
 				</script>
 			</select>
 		</div>
@@ -137,8 +142,11 @@
 		<div class="field">
 			<label for="cityFilter">Search by City</label>
 			<select id="cityFilter">
+				<option></option>
 				<script id="city-template" type="text/x-handlebars-template">
-					<option value="{{cells.Cities}}">{{cells.Cities}}</option>
+					{{#if cells.Cities}}
+						<option value="{{cells.Cities}}">{{cells.Cities}}</option>
+					{{/if}}
 				</script>
 			</select>
 		</div>
@@ -146,8 +154,11 @@
 		<div class="field">
 			<label for="typeFilter">Search by Service Type</label>
 			<select id="typeFilter">
-				<script id="type-template" type="text/x-handlebars-template">
-					<option value="{{cells.Types}}">{{cells.Types}}</option>
+				<option></option>	
+				<script id="type-template" type="text/x-handlebars-template">			
+					{{#if cells.Types}}
+						<option value="{{cells.Types}}">{{cells.Types}}</option>
+					{{/if}}
 				</script>
 			</select>
 		</div>
@@ -163,12 +174,12 @@
 			<thead>
 			<tr>
 				<th style="width:150px;">Organization</th>
-				<th style="width:150px;">Program</th>
-				<th>Description</th>
-				<th>Phone</th>
-				<th>Email</th>
-				<th>Services</th>
-				<th>Location</th>
+				<th style="width:120px;">Program</th>
+				<th style="width:200px;">Description</th>
+				<th style="width:100px;">Phone</th>
+				<th style="width:75px;">Email</th>
+				<th style="width:100px;">Services</th>
+				<th style="width:100px;">Service Area</th>
 			</tr>
 			</thead>
 			<tbody id="resourceBody">
@@ -195,6 +206,5 @@
 			</tbody>			
 		</table>
 	</body>
-		
 </html>
 

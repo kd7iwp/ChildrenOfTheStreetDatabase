@@ -8,10 +8,12 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
 		
 		<script type='text/javascript'>//<![CDATA[
-			//var malformedparentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1l2jeO_mukPEyrXwGtNn56xM-hGbas-WMwZ7So3cOAIc/edit#gid=0';
 			var parentToolkitSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=0';
 			var filterSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=1597681109';
 		
+			// Register template for resources
+			var resourceTemplate;
+			
 			// When querying the spreadsheet we must use column letters. Map the column names of our filters to their "letter"
 			var filterColMapping = {
 				"Service Location": ["H"],
@@ -21,59 +23,21 @@
 
 			function LoadResources(filterType, filterValue)
 			{			
-				var searchQuery = "select A,B,C,D,E,F,G,H,I where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
+				var searchQuery = "select A,B,C,D,E,F,G,H where " + filterColMapping[filterType] + " like '%" + filterValue + "%' order by A";
 						
-				//var labelsArray = ["Organization", "Program", "Description", "Website", "Phone Number", "Email", "Service Type", "Service Location", "Service Region"];
-			
 				$('#loadingIcon').show();
 				
 				// Load up the list of resources that match the filters
-				$('#resourceList').empty().sheetrock({
+				$('#resourceBody').empty().sheetrock({
 					url: parentToolkitSheet,
 					query: searchQuery,
-					//labels: labelsArray,
 					loading: $('#loadingIcon'),
-					rowTemplate: toHTML,
+					rowTemplate: resourceTemplate,
 					callback: SheetrockHandler
 				});
 				
 				$('#loadingIcon').hide();
-				
-				$('#resourceList')
 			}
-			
-			// Default row template: Output a row object as an HTML table row. Use "td"
-			// for table body row, "th" for table header rows.
-			var toHTML = function (row) {
-			  var tag = (row.num) ? 'td' : 'th';
-			  var cells = Object.keys(row.cells);
-			  var html = '';
-			  cells.forEach(function (key) {
-				var contents = "";
-				
-				// If this is not a header row we want to manipulate the data by adding things like anchors
-				if (row.num && (key == "Website" || key == "Email"))
-				{
-					if (key == "Website" && row.cells[key] != "")
-						contents = "<a href='http://" + row.cells[key] + "'>" + row.cells[key] + "</a>";
-					else if (key == "Email" && row.cells[key] != "")
-						contents = "<a href='mailto:" + row.cells[key] + "'>" + row.cells[key] + "</a>";
-					else
-						contents = row.cells[key];
-				}
-				else
-					contents = row.cells[key];
-					
-			    html += wrapTag(contents, tag);
-			  });
-			  return wrapTag(html, 'tr');
-			};
-			
-			// Wrap a string in tag. The style argument, if present, is populated into
-			// an inline CSS style attribute. (Gross!)
-			var wrapTag = function (str, tag) {
-			  return '<' + tag + '>' + str + '</' + tag + '>';
-			};
 
 			function SheetrockHandler(Error, Options, Response)
 			{
@@ -83,28 +47,7 @@
 				}
 			}
 
-			function LoadTestList()
-			{
-				var mockSheet = 'https://docs.google.com/spreadsheets/d/1RHCgt5w5KlqucNdKVPP25uUovFu2vQIZsZml1dzZPR0/edit#gid=0';
-
-				// Compile the test template
-				var testTemplate = Handlebars.compile($('#testTemplate').html());
-
-				$('#testBody').empty().sheetrock({
-					url:mockSheet,
-					fetchSize: 20,
-					query: "select A,B,C,D,E,F ORDER BY A",
-					rowTemplate: testTemplate,
-					rowGroups: false
-				})
-			}
-		
-			$(window).load(function(){
-				
-				// Testing
-				LoadTestList();
-				
-				
+			$(window).load(function(){				
 				$('#regionFilter').change(function() {
 					LoadResources("Service Region", $(this).val());
 				});
@@ -116,33 +59,49 @@
 				$('#typeFilter').change(function() {
 					LoadResources("Service Type", $(this).val());
 				});
-					
+				
+				// Clear out the other filters when one is changed
+				$('.filter').change(function() {
+					var selectedVal = $(this).val();
+					$('.filter').val('');
+					$(this).val(selectedVal);
+				});
+								
 				// Register our Handlebars templates
 				var RegionTemplate = Handlebars.compile($('#region-template').html());
 				var CityTemplate = Handlebars.compile($('#city-template').html());
 				var TypeTemplate = Handlebars.compile($('#type-template').html());
+				resourceTemplate = Handlebars.compile($('#resourceTemplate').html());
+				
+				// This Handlebars block_helper let's us know if a value exists or not to perform conditional template statements
+				Handlebars.registerHelper('if', function(conditional, options)
+				{
+					if (conditional)
+						return options.fn(this);
+					return options.inverse(this);
+				})
 		
 				// Populate our select lists with filter options	
 				$('#regionFilter').sheetrock({
 					url: filterSheet,
-					query: "select A WHERE A != ' '",
+					query: "select A",
 					rowTemplate: RegionTemplate,
-					  callback: SheetrockHandler
-				}).append($("<option></option>"));
+					callback: SheetrockHandler
+				});
 
 				$('#cityFilter').sheetrock({
 					url: filterSheet,
 					query: "select B",
 					rowTemplate: CityTemplate,
-					  callback: SheetrockHandler
-				}).append($("<option></option>"));
+					callback: SheetrockHandler
+				});
 
 				$('#typeFilter').sheetrock({
 					url: filterSheet,
 					query: "select C",
 					rowTemplate: TypeTemplate,
-					  callback: SheetrockHandler
-				}).append($("<option></option>"));
+					callback: SheetrockHandler
+				});
 			});//]]> 
 		</script>	
 		
@@ -153,67 +112,63 @@
 			select {
 				width: 200px;
 			}
-			.table-striped > tbody > tr:nth-of-type(2n+1) {
+			#resourceList {
+				width: 100%;
+				table-layout: fixed;
+			}
+			.table-striped > tbody > tr:nth-of-type(2n+2) {
 				background-color: #F8C0EB;
 			}
-			
+			#resourceList > thead > tr > th {
+				font-family: helvetica;
+				color: white;
+				background-color:#CF0072;
+			}	
+			.contact {
+				font-size: small;
+				
+				overflow: hidden;
+				margin-left: 5px;
+			}	
 		</style>
 	</head>
 	<body>	
-		
-		<table id="testList" style="border: 2px solid black;background-color:lightgray">
-			<tr>
-				<th style="width:150px;">Organization</th>
-				<th style="width:150px;">Program</th>
-				<th>Description</th>
-				<th style="width:150px;">Website</th>
-				<th>Phone</th>
-				<th>Email</th>
-			</tr>
-			<tbody id="testBody">
-				<script id="testTemplate" type="text/x-handlebars-template">
-					<tr>
-						<td>{{cells.Organization}}</td>
-						<td>{{cells.Program}}</td>
-						<td>{{cells.Description}}</td>
-						<td><a href="{{cells.Website}}">{{cells.Website}}</a></td>
-						<td>{{cells.Phone}}</td>
-						<td><a href="mailto:{{cells.Email}}">{{cells.Email}}</a></td>
-					</tr>
-				</script>
-			</tbody>
-		</table>
-		
-		<hr />
-		<hr />
-		
 		<div id="loadingIcon" style="float:right;padding:10px;color:white;background-color:#CF0072;display:none;">
 			LOADING...
 		</div>
 		
 		<div class="field">
 			<label for="regionFilter">Search by Region</label>
-			<select id="regionFilter">
+			<select id="regionFilter" class="filter">
+				<option></option>
 				<script id="region-template" type="text/x-handlebars-template">
-					<option value="{{cells.Regions}}">{{cells.Regions}}</option>
+					{{#if cells.Regions}}
+						<option value="{{cells.Regions}}">{{cells.Regions}}</option>
+					{{/if}}
 				</script>
 			</select>
 		</div>
 		
 		<div class="field">
 			<label for="cityFilter">Search by City</label>
-			<select id="cityFilter">
+			<select id="cityFilter" class="filter">
+				<option></option>
 				<script id="city-template" type="text/x-handlebars-template">
-					<option value="{{cells.Cities}}">{{cells.Cities}}</option>
+					{{#if cells.Cities}}
+						<option value="{{cells.Cities}}">{{cells.Cities}}</option>
+					{{/if}}
 				</script>
 			</select>
 		</div>
 
 		<div class="field">
 			<label for="typeFilter">Search by Service Type</label>
-			<select id="typeFilter">
-				<script id="type-template" type="text/x-handlebars-template">
-					<option value="{{cells.Types}}">{{cells.Types}}</option>
+			<select id="typeFilter" class="filter">
+				<option></option>	
+				<script id="type-template" type="text/x-handlebars-template">			
+					{{#if cells.Types}}
+						<option value="{{cells.Types}}">{{cells.Types}}</option>
+					{{/if}}
 				</script>
 			</select>
 		</div>
@@ -225,8 +180,47 @@
 		</div>
 		
 		<p>Resources available based on your selection:</p>
-		<table id="resourceList" class="table table-condensed table-striped"></table>
+		<table id="resourceList" class="table table-condensed table-striped">
+			<thead>
+			<tr>
+				<th style="width:15%;">Organization</th>
+				<th style="width:15%;">Program</th>
+				<th style="width:25%;">Description</th>
+				<th style="width:14%;">Services</th>
+				<th style="width:14%;">Service Area</th>
+			</tr>
+			</thead>
+			<tbody id="resourceBody">
+				<script id="resourceTemplate" type="text/x-handlebars-template">
+					<tr>
+						<td>
+							<strong>
+								{{#if cells.Website}}
+									<a href="http://{{cells.Website}}">{{cells.Organization}}</a>
+								{{else}}
+									{{cells.Organization}}
+								{{/if}}
+							</strong>
+							<div class="contact">
+								{{#if cells.Email}}
+									<strong>e:</strong>&nbsp;<a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
+								{{/if}}
+								{{#if cells.Phone}}
+									{{#if cells.Email}}
+										<br />
+									{{/if}}
+									<strong>p:</strong>&nbsp;{{cells.Phone}}
+								{{/if}}
+							</div>
+						</td>
+						<td style="font-weight:bold;font-style:italic;">{{cells.Program}}</td>
+						<td>{{cells.Description}}</td>
+						<td>{{cells.Services}}</td>
+						<td>{{cells.Location}}</td>
+					</tr>
+				</script>
+			</tbody>			
+		</table>
 	</body>
-		
 </html>
 

@@ -50,6 +50,12 @@
 					$('#errorMessage').hide();
 				}
 			}
+			
+			// Add a handler to show contact info
+			function ShowContactInfo(elem) 
+			{
+				elem.parent().children('.contact').show();
+			}
 
 			$(window).load(function(){				
 				$('#regionFilter').change(function() {
@@ -129,10 +135,15 @@
 				background-color:#CF0072;
 			}	
 			.contact {
-				font-size: small;
-				
-				overflow: hidden;
+				background-color: lightgray;
+				border: 2px solid gray;
+				border-radius: 5px;
 				margin-left: 5px;
+				overflow: hidden;
+				padding: 10px;
+				position: relative;
+				width: 245px;
+				display: none;
 			}	
 		</style>
 	</head>
@@ -205,9 +216,19 @@
 									{{cells.Organization}}
 								{{/if}}
 							</strong>
+							{{#if cells.Email}}
+								<button type="button" onclick="ShowContactInfo($(this))">Contact</button>
+							{{else}} 
+								{{#if cells.Phone}}
+									<button type="button" onclick="ShowContactInfo($(this));">Contact</button>
+								{{/if}}
+							{{/if}}
 							<div class="contact">
+								<div class="close">
+								
+								</div>
 								{{#if cells.Email}}
-									<strong>e:</strong>&nbsp;<a href="mailto:{{cells.Email}}">{{cells.Email}}</a>
+									<strong>e:</strong>&nbsp;<a href="mailto:{{cells.Email}};">{{cells.Email}}</a>
 								{{/if}}
 								{{#if cells.Phone}}
 									{{#if cells.Email}}
@@ -215,7 +236,7 @@
 									{{/if}}
 									<strong>p:</strong>&nbsp;{{cells.Phone}}
 								{{/if}}
-							</div>
+							</div>							
 						</td>
 						<td style="font-weight:bold;font-style:italic;">{{cells.Program}}</td>
 						<td>{{cells.Description}}</td>
